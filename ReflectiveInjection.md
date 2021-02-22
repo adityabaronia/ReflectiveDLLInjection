@@ -4,6 +4,17 @@
 
 An extra function will be exported in the DLL and that will be **position independent** function. 
 
+## Overview
+Here we will have 2 processes:
+- Target process
+- Injector process
+and a DLL. Inside a DLL there will be a exported function. Name of the exported function will be **ReflectiveLoader**. 
+In brief; injector process will write the dll in the address space of target process and then it will call the exported function(ReflectiveLoader) of the DLL. Then the exported function will load itself in the target address space.
+
+Steps:
+1. 
+
+
 
 ## code
     // https://www.youtube.com/watch?v=EZUoCCFVZXQ
