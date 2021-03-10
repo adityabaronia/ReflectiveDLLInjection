@@ -2,22 +2,44 @@
 
 **Reflective injection is a technique that allows an attacker to  inject a DLL into a target process from memory rather than disk.** 
 
-An extra function will be exported in the DLL and that will be **position independent** function. 
-
 ## Overview
 Here we will have 2 processes:
-- Target process
+- Target process(host process)
 - Injector process
-and a DLL. Inside a DLL there will be a exported function. Name of the exported function will be **ReflectiveLoader**. 
+- and a DLL.
+Inside a DLL there will be a exported function. Name of the exported function will be **ReflectiveLoader** or it can be whatever we want. 
+
 In brief; injector process will write the dll in the address space of target process and then it will call the exported function(ReflectiveLoader) of the DLL. Then the exported function will load itself in the target address space.
 
-Steps:
-1. 
+## Steps to make injector process:
+1. Take command line arguments
+	- pid of target process **argv[1]**
+	- absolute path of the dll to be injected **argv[2]**
+	- name of the exported function of dll that will load the itself(dll) **argv[3]**
+2. Using the *absolute path of DLL* open the dll with required access right and read it in heap memory of injector process
+3. parse the dll file copied into heap to find out the offset of the exported function(argv[3]).
+4. save the offset of exported function in a variable. **If not able to find the offset then free the allocated heap memory and exit the program**.
+5. else  
+6. Using the *pid* open the target process with the required access rights
+8. Using WIN API *VirtualAllocEx()* allocate a READ_WRITE_EXECUTABLE region in the target process.
+9. using WIN API *WriteProcessMemory()* write the memory allocated in STEP8 with the dll present in the heap of injector process
+10. VirtualAllocEx() function will save the first address of allocated memory space in a variable. After STEP9 that first address will be the base address of the dll.
+11. adding up the base address of dll and the offset of exported function we will get the virtual address of exported function
+12. This VA of exported function will be given to WIN API CreateRemoteThread() as the functionality to be executed the the thread.
+  	
+        '''
+		DWORD ThreadId;
+		HANDLE hThread = CreateRemoteThread(hProcess, NULL, 1024 * 1024, (LPTHREAD_START_ROUTINE)VAOfExportedFunction, NULL, (DWORD)NULL, &dwThreadId);
+        	if (!hThread) {
+        		printf("Error in creating thread");
+        		return 1;
+    		}
+	    	WaitForSingleObject(hThread, -1);	'''
 
-
+13.with this the injecter code will be completed
 
 ## code
-    // https://www.youtube.com/watch?v=EZUoCCFVZXQ
+
     #include <stdio.h>
     #include <Windows.h>
     #include <string.h>
