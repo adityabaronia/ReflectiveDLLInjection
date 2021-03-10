@@ -27,14 +27,14 @@ In brief; injector process will write the dll in the address space of target pro
 11. adding up the base address of dll and the offset of exported function we will get the virtual address of exported function
 12. This VA of exported function will be given to WIN API CreateRemoteThread() as the functionality to be executed the the thread.
   	
-        '''
+        
 		DWORD ThreadId;
 		HANDLE hThread = CreateRemoteThread(hProcess, NULL, 1024 * 1024, (LPTHREAD_START_ROUTINE)VAOfExportedFunction, NULL, (DWORD)NULL, &dwThreadId);
         	if (!hThread) {
         		printf("Error in creating thread");
         		return 1;
     		}
-	    	WaitForSingleObject(hThread, -1);	'''
+	    	WaitForSingleObject(hThread, -1);	
 
 13.with this the injecter code will be completed
 
