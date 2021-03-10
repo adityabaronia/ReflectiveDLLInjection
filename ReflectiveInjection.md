@@ -22,8 +22,8 @@ In brief; injector process will write the dll in the address space of target pro
 5. else  
 6. Using the *pid* open the target process with the required access rights
 8. Using WIN API *VirtualAllocEx()* allocate a READ_WRITE_EXECUTABLE region in the target process.
-9. using WIN API *WriteProcessMemory()* write the memory allocated in STEP8 with the dll present in the heap of injector process
-10. VirtualAllocEx() function will save the first address of allocated memory space in a variable. After STEP9 that first address will be the base address of the dll.
+9. using WIN API *WriteProcessMemory()* write the memory allocated in previous step with the dll present in the heap of injector process
+10. VirtualAllocEx() function will save the first address of allocated memory space in a variable. After previous step that first address will be the base address of the dll.
 11. adding up the base address of dll and the offset of exported function we will get the virtual address of exported function
 12. This VA of exported function will be given to WIN API CreateRemoteThread() as the functionality to be executed the the thread.
   	
