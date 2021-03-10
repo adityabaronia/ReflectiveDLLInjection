@@ -1,6 +1,6 @@
 # Reflective Injection
 
-**Reflective injection is a technique that allows an attacker to  inject a DLL into a target process from memory rather than disk. ** 
+**Reflective injection is a technique that allows an attacker to  inject a DLL into a target process from memory rather than disk.** 
 
 An extra function will be exported in the DLL and that will be **position independent** function. 
 
