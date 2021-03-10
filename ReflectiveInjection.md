@@ -17,7 +17,7 @@ In brief; injector process will write the dll in the address space of target pro
 	- absolute path of the dll to be injected **argv[2]**
 	- name of the exported function of dll that will load the itself(dll) **argv[3]**
 2. Using the *absolute path of DLL* open the dll with required access right and read it in heap memory of injector process
-3. parse the dll file copied into heap to find out the offset of the exported function(argv[3]).
+3. traverse the dll file copied into heap to find out the offset of the exported function(argv[3]).
 4. save the offset of exported function in a variable. **If not able to find the offset then free the allocated heap memory and exit the program**.
 5. else  
 6. Using the *pid* open the target process with the required access rights
