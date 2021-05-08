@@ -157,21 +157,20 @@ In brief; injector process will write the dll in the address space of target pro
     return 0;
     }*/
     // ReflectiveInjector.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+	//
 
+    /*So here we can see that we are traversing the PE file. We know that we need 
+    to traverse the PE file for development of a shellcode. The method or idea to
+    traverse a PE file is different for  both  shellcode  and  DLLInjection. When
+    traversing a PE file for shellcode development we can see the file we are 
+    traversing(generally kernel32.dll) is inside the memory. This means we can get
+    Virtual addresses of function quit easily by adding "RVA +Base address of DLL".
+    The case is not same with DLL injection. In this case the PE file is on disk 
+    and not in memory. So, here RVA won't work. We need of offset.
+    And this is how we can get offset  
 
-/*So here we can see that we are traversing the PE file. We know that we need 
-to traverse the PE file for development of a shellcode. The method or idea to
-traverse a PE file is different for  both  shellcode  and  DLLInjection. When
-traversing a PE file for shellcode development we can see the file we are 
-traversing(generally kernel32.dll) is inside the memory. This means we can get
-Virtual addresses of function quit easily by adding "RVA +Base address of DLL".
-The case is not same with DLL injection. In this case the PE file is on disk 
-and not in memory. So, here RVA won't work. We need of offset.
-And this is how we can get offset  
-
-// function do what its name says
-DWORD RVAtoOffset(DWORD RVA,PIMAGE_SECTION_HEADER section, PIMAGE_NT_HEADERS dllNtHeaders, PIMAGE_DOS_HEADER dllbaseAddress){
+    // function do what its name says
+    DWORD RVAtoOffset(DWORD RVA,PIMAGE_SECTION_HEADER section, PIMAGE_NT_HEADERS dllNtHeaders, PIMAGE_DOS_HEADER dllbaseAddress){
     //DWORD RVA --> RVA of the "thing" whose offset we want
     //PIMAGE_SECTION_HEADER section --> VA of first section
     //PIMAGE_NT_HEADERS dllNtHeaders --> address of NT header
@@ -191,36 +190,37 @@ DWORD RVAtoOffset(DWORD RVA,PIMAGE_SECTION_HEADER section, PIMAGE_NT_HEADERS dll
     }
     
     return RVA;
-}
-*/
-
-#include <iostream>
-#include <stdio.h>
-#include "Windows.h"
-#include <string.h>
-
-// function do what its name says
-DWORD RVAtoOffset(DWORD RVA,PIMAGE_SECTION_HEADER section, PIMAGE_NT_HEADERS dllNtHeaders, PIMAGE_DOS_HEADER dllbaseAddress){
-    DWORD offset = 0;
-    for (int i = 0; i <= dllNtHeaders->FileHeader.NumberOfSections; i++) {
-        //dllsection = section;
-        //printf("pointer to raw data of %s section header is : %p\n", dllsection->Name, dllsection->PointerToRawData);
-        if ((RVA > section->VirtualAddress) && (RVA < section->VirtualAddress + section->Misc.VirtualSize)) {
-            printf("The given RVA is found in %s section having virtual address: %p\n", section->Name, section->VirtualAddress);
-            offset = DWORD(section->PointerToRawData + (RVA - section->VirtualAddress));
-            printf("Offset to given %x RVA is %x\n", RVA, offset);
-            return offset;
-            
-        }
-        section = section + 1;
     }
+     */
+
+
+	#include <iostream>
+	#include <stdio.h>
+	#include "Windows.h"
+	#include <string.h>
+
+	// function do what its name says
+	DWORD RVAtoOffset(DWORD RVA,PIMAGE_SECTION_HEADER section, PIMAGE_NT_HEADERS dllNtHeaders, PIMAGE_DOS_HEADER dllbaseAddress){
+    		DWORD offset = 0;
+        	for (int i = 0; i <= dllNtHeaders->FileHeader.NumberOfSections; i++) {
+        		//dllsection = section;
+        		//printf("pointer to raw data of %s section header is : %p\n", dllsection->Name, dllsection->PointerToRawData);
+        		if ((RVA > section->VirtualAddress) && (RVA < section->VirtualAddress + section->Misc.VirtualSize)) {
+            			printf("The given RVA is found in %s section having virtual address: %p\n", section->Name, section->VirtualAddress);
+            			offset = DWORD(section->PointerToRawData + (RVA - section->VirtualAddress));
+            			printf("Offset to given %x RVA is %x\n", RVA, offset);
+            			return offset;
+            
+       			}
+       			section = section + 1;
+   	 	}
     
-    return RVA;
-}
+    	return RVA;
+	}
 
 
-int main(int argc, char* argv[])
-{
+	int main(int argc, char* argv[])
+	{
    
     DWORD pid;
     HANDLE hProcess;
@@ -458,7 +458,7 @@ int main(int argc, char* argv[])
     printf("success!\n");
     
     return 0;
-}
+   }
 
 
 
